@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <title>SlashVend Panel</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+        }
+        .table {
+            border-collapse: collapse;
+            border-top: 3px solid #168;
+        }  
+        .table th {
+            color: #168;
+            background: #f0f6f9;
+            text-align: center;
+        }
+        .table th, .table td {
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+        .table th:first-child, .table td:first-child {
+            border-left: 0;
+        }
+        .table th:last-child, .table td:last-child {
+            border-right: 0;
+        }
+        .table tr td:first-child{
+            text-align: center;
+        }
+        
+        .in {
+            font-size: 15px;
+        }
+        .box {
+            width: 70%;
+            position: absolute;
+            top: 0%;
+            left: 50%;
+            transform: translate(-50%, 0%);
+        }
+        .text{
+            
+            color: gray;
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+        .textbox{
+            margin: 20px
+        }
+        .powerbtn {
+            float: left;
+            margin-left: 10px;
+        }
+        .controls {
+            margin-left: 20px;
+            margin-bottom: 20px
+
+        }
+        .txt{
+            /* color: white; */
+            /* text-align: center; */
+            padding-top: 20px;
+            font-size: 20px;
+            font-weight: 900;
+            text-align: center;
+        }
+        .title-controls {
+            float: right
+        }
+        .info {
+            text-align: center;
+            color: #FF605C;
+        }
+        .inputs {
+            text-align: center;
+            width: 97%;
+            height: 20px;
+            border-radius: 3px;
+            margin: 4px;
+            margin-right: 1%
+        }
+        .summit-btn{
+            width: 100%;
+            height: 30px;
+            font-size: 17px;
+            background-color: #ffaeae;
+            text-align: center;
+            padding-top: 7.5px;
+            font-weight: 600;
+            /* margin-top: 20px; */
+            margin: 4px;
+            float: left;
+            border-radius: 3px;
+            
+        }
+    </style>
+</head>
+<body>
+    <div class="box">
+        {% if tf == "product" %}
+        <div class="txt">상품 정보</div>
+        <table class="table" style="margin: 4px; width: 100%;">
+            <tr>
+                <th>이름</th>
+                <th>가격</th>
+                <th>삭제</th>
+            </tr>
+            
+            <tr>
+                <td>
+                    
+                    <input class="inputs" id="name" value="{{product.2}}">
+                </td>
+                <td>
+                    <input class="inputs" id="price" value="{{product.3}}">
+                </td>
+                <td>
+                    <div onclick="del();">삭제하기</div>
+                </td>
+            </tr>
+        </table>
+        <textarea name="" id="stock" cols="30" style="width: 100%; height: 100px;" placeholder="재고 추가하기" rows="10"></textarea>
+        <div class="summit-btn"  onclick='addStock()'>재고추가</div>
+        <table class="table" style="margin: 4px; width: 100%;">
+            <tr>
+                <th>#</th>
+                <th>재고</th>
+                <th>삭제</th>
+            </tr>
+            
+            {% for i in stock %}
+                <tr>
+                    <td>
+                        {{loop.index}}
+                    </td>
+                    <td>
+                        {{i.2}}
+                    </td>
+                    <td><div onclick='delStock("{{i.2}}")'>삭제</div></td>
+                </tr>
+            {% endfor %}
+        </table>
+        <script>
+                name_ = document.getElementById("name");
+                name_.addEventListener("keyup", function(event) {
+                    if (event.key === "Enter") {
+                        $.get( "/name/{{product.1}}?name="+name_.value, function( data ) {
+                            alert(data);
+                            location.reload()
+                        });
+                    }
+                });
+                stock = document.getElementById("stock");
+                function addStock() {
+                    $.post( "/addStock/{{product.1}}", {"value": stock.value}, function( data ) {
+                        alert(data);
+                        location.reload()
+                    });
+                }
+                price = document.getElementById("price");
+                price.addEventListener("keyup", function(event) {
+                    if (event.key === "Enter") {
+                        $.get( "/price/{{product.1}}?price="+price.value, function( data ) {
+                            alert(data);
+                            location.reload()
+                        });
+                    }
+                });
+                function del(){
+                    $.get( "/del/{{product.1}}", function( data ) {
+                        alert("성공적으로 삭제 되었습니다.");
+                        location.replace("/")
+                    }); 
+                }
+                function delStock(n){
+                    $.get( "/delStock/{{product.1}}?name="+n, function( data ) {
+                        alert("성공적으로 삭제 되었습니다.");
+                        location.reload()
+                    }); 
+                }
+        </script>
+        <hr>
+        {% endif %}
+        <script>
+            function create(){
+                $.get( "/create", function( data ) {
+                    alert(data);
+                    location.reload()
+                }); 
+            }
+            
+            
+        </script>
+        <div class="txt"><div>상품 목록</div> <div class="summit-btn"  onclick='create()'>생성하기</div></div>
+        <table class="table" style="margin: 4px; width: 100%;">
+            <tr>
+                <th>#</th>
+                <th>이름</th>
+                <th>가격</th>
+                <th>관리하기</th>
+            </tr>
+            
+            {% for i in product_query %}
+                <tr>
+                    <td>
+                        {{loop.index}}
+                    </td>
+                    <td>
+                        {{i.2}}
+                    </td>
+                    <td>
+                        {{i.3}}
+                    </td>
+                    <td><div onclick='location.replace("/product/{{i.1}}")'>관리하기</div></td>
+                </tr>
+            {% endfor %}
+        </table>
+        
+        <div class="txt">유저 목록</div>
+        <table class="table" style="margin: 4px; width: 100%;">
+            <tr>
+                <th>#</th>
+                <th>ID</th>
+                <th>잔액</th>
+            </tr>
+            
+            {% for i in users_query %}
+                <tr>
+                    <td>
+                        {{loop.index}}
+                    </td>
+                    <td>
+                        {{i.1}}
+                    </td>
+                    <td>
+                        <input class="inputs amounts" type="number" value="{{i.2}}" placeholder="{{i.1}}">
+
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+        <input class="inputs" type="text" placeholder="컬쳐랜드ID" id="id">
+        <input class="inputs" type="text" placeholder="컬쳐랜드PW" id="pw">
+        <div class="summit-btn"  onclick='culture()' id="culture-submit">설정하기</div>
+        <br>
+        <input class="inputs" type="text" placeholder="역할 설정" id="role" value="{{role_query[1]}}">
+        <div class="summit-btn"  onclick='roles()' id="role-submit">설정하기</div>
+        <br>
+        <input class="inputs" type="text" placeholder="구매로그웹훅" id="pur" value="{{logs_query[1]}}">
+        <input class="inputs" type="text" placeholder="관리자로그웹훅" id="adm" value="{{logs_query[2]}}">
+        <div class="summit-btn"  onclick='logs()' id="log-submit">설정하기</div>
+
+        <script>
+
+            role = document.getElementById("role");
+            role_submit = document.getElementById("role-submit")
+            role.addEventListener("keyup", function(event) {
+                if (event.key === "Enter") {
+                    role_submit.click()
+                }
+            });
+            function roles(){
+                $.post( `/role`, {val: role.value}, function( data ) {
+                    alert(data);
+                    location.reload()
+                });
+            }
+
+            pur = document.getElementById("pur");
+            adm = document.getElementById("adm");
+            log_submit = document.getElementById("log-submit")
+            pur.addEventListener("keyup", function(event) {
+                if (event.key === "Enter") {
+                    adm.focus()
+                }
+            });
+            adm.addEventListener("keyup", function(event) {
+                if (event.key === "Enter") {
+                    log_submit.click()
+                }
+            });
+            function logs(){
+                $.post( `/webhook`, {"pur": pur.value, "adm": adm.value}, function( data ) {
+                    alert(data);
+                    location.reload()
+                });
+            }
+            
+
+            var amounts = document.getElementsByClassName("amounts");
+            Array.prototype.forEach.call(amounts,amount => {
+                amount.addEventListener("keyup", function(event) {
+                    if (event.key === "Enter") {
+                        id = amount.placeholder
+                        $.get( `/amount/${id}?amount=${amount.value}`, function( data ) {
+                            alert(data);
+                            location.reload()
+                        });
+                    }
+                });
+            });
+            id = document.getElementById("id");
+            pw = document.getElementById("pw");
+            culture_submit = document.getElementById("culture-submit")
+            id.addEventListener("keyup", function(event) {
+                if (event.key === "Enter") {
+                    pw.focus()
+                }
+            });
+            pw.addEventListener("keyup", function(event) {
+                if (event.key === "Enter") {
+                    culture_submit.click()
+                }
+            });
+            function culture(){
+                $.post( `/culture`, {"id": id.value, "pw": pw.value}, function( data ) {
+                    alert(data);
+                    location.reload()
+                });
+            }
+            
+        </script>
+    </div>
+     
+</body>
+</html>
